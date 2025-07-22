@@ -1,49 +1,25 @@
 const { v4: uuidv4 } = require('uuid');
 const {Datetime} = require('luxon');
 const {ObjectId} = require('mongodb');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
+//available categories
+const categories = ['Road Course', 'Drift', 'Car Show', 'Dirt Oval', 'Karting', 'Asphalt Oval', 'Other'];
 
-let events;
-exports.getCollection = db => {
-        events = db.collection('events');
-}
+const eventSchema = new Schema({
+        name: {type: String, required: [true, 'Name is required'], min: [10,'Must be atleast 10 chars'], max:[80, 'Must be atmost 80 chars']},
+        host: {type: String, required: [true, 'Host is required'], min: [10,'Must be atleast 10 chars'], max: [80,'Must be atleast 10 chars']},
+        start: {type: Date, required: [true, 'Start date/time is required'], min: [Date.now(), 'The start date must be current']},
+        end: {type: Date, required: [true, 'End date/time is required'], min: [Date.now(), 'The end date must be current']},
+        location: {type: String, required: [true, 'Location is required'], min: [10, 'The address length must be atleast 10']},
+        details: {type:String, required: [true, 'Details are required'], min: [50, 'Event details must be atleast 50 chars']},
+        category: {type: String, enum: {values: categories, message: '{VALUE} is not supported'}},
+        eventImg: {type: String, required: [true, 'An uploaded image path is required']},
+        views: {type: Number, min: 0, default: 0}},
+        {timestamps: true}
+);
 
-let eventCategories = ['Road Course', 'Drift', 'Car Show', 'Dirt Oval', 'Karting', 'Asphalt Oval', 'Other'];
+const Event = mongoose.model('Event', eventSchema);
 
-//returns a slice of the top 3 events in the database sorted by views
-exports.getTop3 = () => events.sort((eventA, eventB) => eventB.views - eventA.views).slice(0,3);
-exports.findSorted = () => events.find().sort({views: -1}).toArray();
-
-//return all the possible categories
-exports.getEventCategories = () => eventCategories;
-
-//Get all events
-exports.find = () => events.find().toArray();
-
-//Get an event by its id
-exports.findById = (id) => events.findOne({_id: ObjectId.createFromHexString(id)});
-
-//Update an event by its id
-exports.updateById = (id, newEvent) => events.updateOne(
-        {_id: ObjectId.createFromHexString(id)},
-        {$set:
-        {
-                name: newEvent.name,
-                host: newEvent.host,
-                start: newEvent.start,
-                end: newEvent.end,
-                location: newEvent.location,
-                details: newEvent.details,
-                category: newEvent.category,
-                eventImg: newEvent.eventImg,
-        }});
-
-exports.incrementViewsById = (id) => events.updateOne(
-        {_id: ObjectId.createFromHexString(id)},
-        {$inc:{views:1}});
-
-//Delete an event by its id
-exports.deleteById = (id) => events.deleteOne({_id: ObjectId.createFromHexString(id)});
-
-//Create a new event
-exports.createNew = (newEvent) => events.insertOne(newEvent)
+module.exports = {Event, categories};
