@@ -1,7 +1,7 @@
 //require modules
 const express = require('express');
 const morgan = require('morgan');
-const {MongoClient} = require('mongodb');
+const mongoose = require('mongoose');
 const ejs = require('ejs');
 const { urlencoded } = require('body-parser');
 const eventRoutes = require('./routes/eventRoutes');
@@ -10,23 +10,21 @@ const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
 const {getCollection} = require('./models/event')
 
-
 //create app
 const app = express();
 
 //configure app
 const port = 8080;
 const host = 'localhost';
-const url = 'mongodb://localhost:27017';
+const url = 'mongodb://localhost:27017/motorshift_connection';
 app.set('view engine', 'ejs');
 
 //mongodb connection
-MongoClient.connect(url)
-.then(client=>{
-    const db = client.db('motorshift_connection');
-    getCollection(db);
+mongoose.connect(url)
+.then(()=>{
     //start server
     app.listen(port, host);
+    console.log('Server running on: ' +host+ ':' +port);
     
 })
 .catch(err=>console.log(err));
@@ -59,6 +57,7 @@ app.use((err, req, res, next) => {
         err.status = 500;
         err.message = ('Internal Server Error');
     }
+    console.log(err);
     res.status(err.status);
     res.render('main/error', {error: err});
 })
