@@ -1,0 +1,32 @@
+<%- include('../partials/header.ejs')%>
+<main>
+  <article class="event-listing">
+    <img
+      src=<%= currEvent.eventImg %>
+    />
+    <section class="event-listing-title">
+      <h4><%= currEvent.name %></h4>
+      <form>
+        <button formmethod="GET" formaction="/events/<%=currEvent.id%>/edit" class="event-edit-button">
+          <i class="fa-regular fa-pen-to-square"></i>
+        </button>
+        <button formmethod="POST" formaction="/events/<%=currEvent.id%>?_method=DELETE" class="event-delete-button">
+          <i class="fa-regular fa-trash-can"></i>
+        </button>
+      </form>
+    </section>
+    <dl>
+      <dt>Host:</dt>
+      <dd><%= currEvent.host %></dd>
+      <dt>Start:</dt>
+      <dd class="event-time"><%= currEvent.start %></dd>
+      <dt>End:</dt>
+      <dd class="event-time"><%= currEvent.end %></dd>
+      <dt>Location:</dt>
+      <dd><%= currEvent.location %></dd>
+      <dt>Details:</dt>
+      <dd><%= currEvent.details %></dd>
+    </dl>
+  </article>
+</main>
+<%- include('../partials/footer.ejs')%>

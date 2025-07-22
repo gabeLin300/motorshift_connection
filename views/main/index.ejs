@@ -1,0 +1,31 @@
+<%- include('../partials/header.ejs')%>
+<main id="home-main">
+      <section>
+        <h2>Welcome to The Motorshift Connection!</h2>
+        <p>
+          Here at Motorshift Connection, you can browse current motorsports
+          events in your area. If you are coordinating an event that is not
+          currently on our events database please feel free to join us and add
+          your event to the database to make it publically available to the
+          community.
+        </p>
+      </section>
+      <% if(top3.length) { %>
+      <aside>
+        <section class="featured">
+          <h5>Featured Events</h5>
+          <ul class="featured-event-cards">
+            <% for(const event of top3) { %>
+            <li class="card">
+              <img
+                src="<%=event.eventImg%>"
+              />
+              <a href="/events/<%=event.id%>">Show more</a>
+            </li>
+            <% } %>
+          </ul>
+        </section>
+      </aside>
+      <% } %>
+    </main>
+<%- include('../partials/footer.ejs')%>

@@ -1,0 +1,88 @@
+<%- include('../partials/header.ejs')%>
+<main>
+      <form method="POST" action="/events/<%=currEvent.id%>?_method=PUT" class="event-form" enctype="multipart/form-data">
+        <fieldset>
+          <legend>Add an event</legend>
+          <div>
+            <label for="category-selection">Category</label>
+            <select
+              name="category"
+              id="category-selection"
+              class="event-form-field"
+              required
+            >
+              <option value="">--Select A Category--</option>
+              <% eventCategories.forEach(category => { %> 
+              <option value="<%=category%>" <% if(category === currEvent.category) {%> selected <% } %>><%=category%></option>
+              <% }); %>
+            </select>
+          </div>
+          <div>
+            <label for="host">Host</label>
+            <input
+              name="host"
+              type="text"
+              id="host"
+              placeholder="Enter a host name"
+              required
+              minlength="10"
+              maxlength="100"
+              value="<%= currEvent.host %>"
+            />
+          </div>
+          <div>
+            <label for="name">Name</label>
+            <input
+              name="name"
+              type="text"
+              id="name"
+              placeholder="Enter a name"
+              required
+              minlength="10"
+              maxlength="100"
+              value="<%= currEvent.name %>"
+            />
+          </div>
+          <div>
+            <label for="location">Location</label>
+            <input
+              name="location"
+              type="text"
+              id="location"
+              placeholder="Event Location"
+              required
+              value="<%= currEvent.location %>"
+            />
+          </div>
+          <div>
+            <label for="start">Start</label>
+            <input name="start" type="datetime-local" id="start" required value="<%= currEvent.start %>"/>
+          </div>
+          <div>
+            <label for="end">End</label>
+            <input name="end" type="datetime-local" id="end" required value="<%= currEvent.end %>"/>
+          </div>
+          <div>
+            <label for="details">Details</label>
+            <textarea
+              name="details"
+              id="details"
+              placeholder="Description of the event..."
+              required
+              minlength="50"
+            ><%= currEvent.details %></textarea>
+          </div>
+          <div id="form-image-upload-container">
+            <label for="image">Image</label>
+            <input name="eventImg" type="file" id="image"/>
+          </div>
+          <div id="form-submit-button-container">
+            <input type="submit" />
+          </div>
+          <div id="form-cancel-button-container">
+            <a id="cancel-button" href="/events">Cancel</a>
+          </div>
+        </fieldset>
+      </form>
+    </main>
+<%- include('../partials/footer.ejs')%>
