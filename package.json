@@ -9,11 +9,12 @@
   "author": "Gabriel Linares",
   "license": "ISC",
   "dependencies": {
-    "@types/node": "^24.0.14",
     "cookie-parser": "^1.4.7",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
+    "luxon": "^3.7.1",
     "method-override": "^3.0.0",
+    "mongoose": "^8.16.4",
     "morgan": "^1.10.0",
     "multer": "^2.0.1",
     "uuid": "^11.1.0"
