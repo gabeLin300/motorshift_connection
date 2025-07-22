@@ -10,17 +10,17 @@
           community.
         </p>
       </section>
-      <% if(top3.length) { %>
+      <% if(top3events.length) { %>
       <aside>
         <section class="featured">
           <h5>Featured Events</h5>
           <ul class="featured-event-cards">
-            <% for(const event of top3) { %>
+            <% for(const event of top3events) { %>
             <li class="card">
               <img
                 src="<%=event.eventImg%>"
               />
-              <a href="/events/<%=event.id%>">Show more</a>
+              <a href="/events/<%=event._id%>">Show more</a>
             </li>
             <% } %>
           </ul>

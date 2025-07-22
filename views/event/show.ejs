@@ -7,10 +7,10 @@
     <section class="event-listing-title">
       <h4><%= currEvent.name %></h4>
       <form>
-        <button formmethod="GET" formaction="/events/<%=currEvent.id%>/edit" class="event-edit-button">
+        <button formmethod="GET" formaction="/events/<%=currEvent._id%>/edit" class="event-edit-button">
           <i class="fa-regular fa-pen-to-square"></i>
         </button>
-        <button formmethod="POST" formaction="/events/<%=currEvent.id%>?_method=DELETE" class="event-delete-button">
+        <button formmethod="POST" formaction="/events/<%=currEvent._id%>?_method=DELETE" class="event-delete-button">
           <i class="fa-regular fa-trash-can"></i>
         </button>
       </form>
