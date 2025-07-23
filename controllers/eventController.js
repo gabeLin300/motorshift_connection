@@ -1,10 +1,11 @@
 const { eventNames } = require('node:process');
+const {DateTime} = require('luxon');
 const model = require('../models/event');
 const { v4: uuidv4 } = require('uuid');
 
 //GET all events
 exports.index = (req, res, next) => {
-    model.Event.find()
+    model.Event.find().lean()
     .then(events => {
         if (events) {
             eventMap = Map.groupBy(events, event => event.category);
@@ -29,7 +30,7 @@ exports.create = (req,res, next) => {
     event.eventImg = '/uploads/' + req.file.filename;
     newEvent = new model.Event(event);
     newEvent.save()
-    .then(result=> {
+    .then(()=> {
         res.redirect('/events');
     })
     .catch(err=>{
@@ -55,9 +56,12 @@ exports.show = (req, res, next) => {
         err.status = 400;
         next(err);
     }
-    model.Event.findById(id)
+    model.Event.findById(id).lean()
     .then(currEvent => {
         if (currEvent) {
+            //date formatting using luxon
+            currEvent.start = DateTime.fromJSDate(currEvent.start).toLocaleString(DateTime.DATETIME_MED)
+            currEvent.end = DateTime.fromJSDate(currEvent.end).toLocaleString(DateTime.DATETIME_MED)
             res.render('event/show', {currEvent});
         } else {
             let err = new Error('Cannot find the event with id: '+id);
@@ -75,9 +79,11 @@ exports.edit = (req, res, next) => {
         err.status = 400;
         next(err);
     }
-    model.Event.findById(id)
+    model.Event.findById(id).lean()
     .then(currEvent => {
         if (currEvent) {
+            currEvent.start = DateTime.fromJSDate(currEvent.start).toISO({includeOffset: false})
+            currEvent.end = DateTime.fromJSDate(currEvent.end).toISO({includeOffset: false})
             res.render('event/edit', {currEvent, eventCategories: model.categories});
         } else {
             let err = new Error('Cannot find the event with id: '+id);
@@ -98,7 +104,7 @@ exports.update = (req, res, next) => {
         err.status = 400;
         next(err);
     }
-    model.Event.findByIdAndUpdate(id, newEvent)
+    model.Event.findByIdAndUpdate(id, newEvent).lean()
     .then(dbEvent=> {
         if(dbEvent) {
             res.redirect('/events/'+id);
@@ -118,7 +124,7 @@ exports.delete = (req, res, next) => {
         err.status = 400;
         next(err);
     }
-    model.Event.findByIdAndDelete(id)
+    model.Event.findByIdAndDelete(id).lean()
     .then(dbEvent=> {
         if (dbEvent) {
             res.redirect('/events');
