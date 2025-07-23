@@ -1,4 +1,3 @@
-const { eventNames } = require('node:process');
 const {DateTime} = require('luxon');
 const model = require('../models/event');
 const { v4: uuidv4 } = require('uuid');
