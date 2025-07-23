@@ -42,20 +42,25 @@ exports.create = (req,res, next) => {
 exports.show = (req, res, next) => {
     let id = req.params.id;
 
-    //simple cookies for tracking views on an event
-    // if(!req.cookies[`event${id}`]) {
-    //     cookieTok = uuidv4();
-    //     //cookie expires in 10 seconds for testing
-    //     res.cookie(`event${id}`, cookieTok, {maxAge: 10000, httpOnly: true});
-    //     return model.incrementViewsById(id);
-    // } 
-
     if(!id.match(/^[0-9a-fA-F]{24}$/)) {
         let err = new Error('Invalid event id');
         err.status = 400;
         next(err);
     }
-    model.Event.findById(id).lean()
+
+    //function to check if views need to be incremented
+    const incrementViews = () => {
+        //simple cookies for tracking views on an event
+        if(!req.cookies[`event${id}`]) {
+            const cookieTok = uuidv4();
+            //cookie expires in 10 seconds for testing
+            res.cookie(`event${id}`, cookieTok, {maxAge: 10000, httpOnly: true});
+            return model.Event.findByIdAndUpdate(id, {$inc:{views:1}}).lean();
+        }
+        return model.Event.findById(id).lean();
+    }
+
+    incrementViews()
     .then(currEvent => {
         if (currEvent) {
             //date formatting using luxon
