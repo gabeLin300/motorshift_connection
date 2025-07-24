@@ -20,9 +20,11 @@ const fileFilter = (req, file, cb) => {
     }
 }
 
-const upload = multer(
-    {storage: storage, fileFilter:fileFilter, fileSize: 2048 * 2048}
-).single('eventImg');
+const upload = multer({
+    storage: storage, 
+    fileFilter:fileFilter, 
+    limits:{fileSize: 3 * 1024 * 1024}
+}).single('eventImg');
 
 exports.fileUpload = (req,res, next) => {
     upload(req, res, err => {
