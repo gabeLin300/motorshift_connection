@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { validate } = require('uuid');
 const Schema = mongoose.Schema;
 
 //available categories
@@ -18,7 +17,7 @@ const eventSchema = new Schema({
                 }},
         location: {type: String, required: [true, 'Location is required'], min: [10, 'The address length must be atleast 10']},
         details: {type:String, required: [true, 'Details are required'], min: [50, 'Event details must be atleast 50 chars']},
-        category: {type: String, enum: {values: categories, message: '{VALUE} is not supported'}},
+        category: {type: String, enum: {values: categories, message: '{VALUE} is not a supported category'}},
         eventImg: {type: String, required: [true, 'An uploaded image path is required']},
         views: {type: Number, min: 0, default: 0, required: [true]}},
         {timestamps: true}
