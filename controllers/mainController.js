@@ -5,7 +5,7 @@ exports.index = (req,res) => {
     model.Event.find().sort({views:-1}).lean()
     .then(events=> {
         if(events) {
-            top3events = events.slice(0,3);
+            let top3events = events.slice(0,3);
             res.render('main/index', {top3events});
         }
     })
