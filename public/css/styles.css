@@ -61,8 +61,9 @@ a {
     color: white;
 }
 
-.user-nav a:hover {
+.user-nav a:hover , .general-nav a:hover{
     opacity: 0.9;
+    text-decoration: underline;
 }
 
 #user-signup {
@@ -130,11 +131,38 @@ footer {
     max-width: 200px;
 }
 
-.event-form div{
+#success {
+    background-color: rgb(200, 201, 201);
+}
+
+#error {
+    background-color: rgb(226, 46, 1);
+}
+
+.flash-message {
+    text-align: center;
+    cursor: pointer;
+    animation: 1s infinite alternate fadeOut;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0.7;
+    }
+}
+
+.main-form div{
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+}
+
+.main-form .company-name {
+    display:none;
 }
 
 select, input, textarea, #cancel-button{
@@ -186,7 +214,7 @@ input[type=submit]:hover, #cancel-button:hover {
     border-radius: 10px;
     background-image: linear-gradient(white, rgb(232, 3, 49));
     margin: 0.5em;
-    gap: 1.5rem;
+    gap: 0.5em;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s ease;
 }
@@ -199,6 +227,8 @@ input[type=submit]:hover, #cancel-button:hover {
 .card a {
     padding: 0 1em 0.8em 1em;
     word-break: break-all;
+    overflow-y: scroll;
+    scrollbar-width: none;
 }
 
 .card img {
@@ -208,29 +238,75 @@ input[type=submit]:hover, #cancel-button:hover {
     border-radius: 10px 10px 0 0;
 }
 
-.event-listing button {
+.card-button-container {
+    display: flex;
+    width: 100%;
+}
+
+.user-events, .user-rsvps {
+    padding: 1em;
+}
+
+.user-events button {
     border: 1px solid rgb(150, 150, 150);
     padding: 1em;
-    border-radius: 3px;
     transition: 0.3s ease;
+    flex-grow: 1;
+    cursor: pointer;
 }
 
 .event-edit-button {
     background-color: rgb(24, 157, 218);
+    border-radius: 0 0 0 10px;
     color: white;
 }
 
 .event-delete-button {
     background-color: rgb(234, 76, 76);
+    border-radius: 0 0 10px 0;
     color: white;
 }
 
-.event-listing-title {
+.event-listing-title , .event-listing-rsvp{
     display: flex;
-    justify-content: center;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
     gap: 0.5rem;
     font-size: 2rem;
 }
+
+.event-listing-rsvp button {
+    width: 70px;
+    height: 30px;
+    border-radius: 15px;
+    background-color: transparent;
+    border: 2px solid rgb(137, 131, 131);
+    background-color: #dadbd9;
+    transition: 1s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+#rsvp-yes:hover {
+    border-color: #28e103;
+}
+
+#rsvp-no:hover {
+    border-color: #e10303;
+}
+
+#rsvp-maybe:hover {
+    border-color: #0358e1;
+}
+
+.main-form .recurring-days-options {
+    display: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 
 .event-listing img {
     width: 100%;
@@ -253,7 +329,7 @@ input[type=submit]:hover, #cancel-button:hover {
     display: flex;
     flex-direction: column-reverse;
     flex-wrap: wrap;
-    padding: 2rem;
+    justify-content: start;
 }
 
 .contact-form fieldset {
@@ -269,23 +345,78 @@ input[type=submit]:hover, #cancel-button:hover {
     margin: 1rem 4rem
 }
 
+.rsvp-table-container {
+    padding: 1rem;
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+thead > tr {
+    background-color: #cfcfcf;
+}
+
+tbody > tr {
+    background-color: white;
+    transition: 0.3s ease;
+}
+
+th, td {
+    padding: 8px 20px;
+}
+
+th {
+    text-align: left;
+}
+
+td {
+    text-align: center;
+}
+
+tbody > tr {
+    border-bottom: 1px solid rgb(177, 178, 177);
+}
+
+tbody > tr:hover {
+    background-color: #f0eeee;
+}
+
+thead > tr > th:first-child {
+    border-radius: 10px 0 0 0;
+}
+
+thead > tr > th:last-child {
+    border-radius: 0 10px 0 0;
+}
+
 @media (min-width: 600px) {
-
-    .event-form fieldset {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+    
+    .main-form div{
+        max-width: 80%;
+        margin: 0 auto;
     }
 
-    #form-submit-button-container {
-        align-items: flex-end;
+    .main-form .event-date {
+        flex-direction: row;
+        max-width: 50%;
+        justify-content: center;
     }
 
-    #form-cancel-button-container {
-        align-items: flex-start;
+    #form-image-upload-container {
+        grid-column: 1 / -1;
+        width: 70%;
+        justify-self: center;
     }
 
-    input[type=submit], #cancel-button {
-        width: 50%;
+    #form-buttons {
+        display: flex;
+        flex-direction: row;
+        grid-column: 1 / -1;
+        width: 40%;
+        justify-self: center;
     }
 
     .event-listing {
@@ -294,9 +425,12 @@ input[type=submit]:hover, #cancel-button:hover {
     }
     
     .event-listing-title {
-        grid-column: 1/-1;
-        justify-content: flex-end;
+        justify-content: flex-start;
         padding-bottom: 1rem;
+    }
+
+    .event-listing-rsvp {
+        justify-content: flex-end;
     }
 
     .event-listing img, .event-listing dl{
