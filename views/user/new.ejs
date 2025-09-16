@@ -1,0 +1,80 @@
+<%- include('../partials/header.ejs')%>
+<main>
+      <form method="POST" action="/users" class="main-form">
+        <fieldset>
+          <legend>Register</legend>
+          <div>
+            <label for="acc-type-selection">Account Type</label>
+            <select
+              name="accType"
+              id="acc-type-selection"
+              class="user-form-field"
+              required
+            >
+              <option value="">--Select an account type--</option>
+              <option value="Business">Business</option>
+              <option value="Personal">Personal</option>
+            </select>
+          </div>
+          <div class="company-name">
+            <label for="company-name">Company Name</label>
+            <input
+              name="companyName"
+              type="text"
+              id="company-name"
+              placeholder="Your Company's name"
+              required
+              minlength="1"
+              maxlength="50"
+            />
+          </div>
+          <div class="name-field">
+            <label for="first-name">First Name</label>
+            <input
+              name="firstName"
+              type="text"
+              id="first-name"
+              placeholder="Your first name"
+              required
+              minlength="1"
+              maxlength="50"
+              autocomplete="name"
+            />
+          </div>
+          <div class="name-field">
+            <label for="last-name">Last Name</label>
+            <input
+              name="lastName"
+              type="text"
+              id="last-name"
+              placeholder="Your last name"
+              required
+              minlength="1"
+              maxlength="50"
+              autocomplete="family-name"
+            />
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input
+              name="email"
+              type="email"
+              id="email"
+              placeholder="Your email address"
+              required
+              autocomplete="email"
+            />
+          </div>
+          <div>
+            <label for="password">Password</label>
+            <input name="password" type="password" id="password" minlength="8" maxlength="64" required/>
+          </div>
+          <div id="form-buttons">
+            <input type="submit" />
+            <a id="cancel-button" href="/events">Cancel</a>
+          </div>
+        </fieldset>
+      </form>
+    </main>
+    <script type="module" src="/js/newAccForm.js"></script>
+<%- include('../partials/footer.ejs')%>

@@ -1,0 +1,57 @@
+<%- include('../partials/header.ejs')%>
+    <main>
+      <article class="user-profile">
+        <h3>Welcome back, <%=user.firstName%></h3>
+        <article class="user-events">
+          <h4>My Events</h4>
+          <ul class="event-cards">
+            <% if(events.length) { %>
+            <% for (const event of events) { %>
+            <li class="card">
+              <img
+                src= <%= event.eventImg%>
+               />
+              <a href="/events/<%= event._id%>"><%= event.name%></a>
+              <form class="card-button-container">
+                <button formmethod="GET" formaction="/events/<%=event._id%>/edit" class="event-edit-button">
+                  <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button formmethod="POST" formaction="/events/<%=event._id%>?_method=DELETE" class="event-delete-button">
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              </form>
+            </li>
+            <% } %>
+            <% } else { %>
+              <p>You have not created any events!</p>
+            <% } %>
+          </ul>
+        </article>
+        <article class="user-rsvps">
+          <h4>My RSPVs</h4>
+          <% if(rsvps.length) { %>
+              <div class="rsvp-table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Title</th>
+                      <th scope="col">Going?</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for (const rsvp of rsvps) { %>
+                      <tr>
+                        <th scope="row"><a href="/events/<%= rsvp.event._id%>"><%= rsvp.event.name%></a></th>
+                        <td><%= rsvp.status%></td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+          <% } else { %>
+              <p>You have no RSVPs yet!</p>
+          <% } %> 
+        </article>
+      </article>
+    </main>
+<%- include('../partials/footer.ejs')%>

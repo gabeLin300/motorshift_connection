@@ -1,0 +1,29 @@
+<%- include('../partials/header.ejs')%>
+<main>
+      <form method="POST" action="/users/login" class="main-form" id="login-form">
+        <fieldset>
+          <legend>Login</legend>
+          <div>
+            <label for="email">Email</label>
+            <input
+              name="email"
+              type="email"
+              id="email"
+              placeholder="Your email address"
+              required
+            />
+          </div>
+          <div>
+            <label for="password">Password</label>
+            <input name="password" type="password" id="password" minlength="8" maxlength="64" required/>
+          </div>
+          <div id="form-login-button">
+            <input type="submit" value="Sign In"/>
+          </div>
+          <div>
+            <p>Dont have an account? <a href="/users/new">Sign Up</a></p>
+          </div>
+        </fieldset>
+      </form>
+    </main>
+<%- include('../partials/footer.ejs')%>
