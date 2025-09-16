@@ -6,18 +6,18 @@
     />
     <section class="event-listing-title">
       <h4><%= currEvent.name %></h4>
-      <form>
-        <button formmethod="GET" formaction="/events/<%=currEvent._id%>/edit" class="event-edit-button">
-          <i class="fa-regular fa-pen-to-square"></i>
-        </button>
-        <button formmethod="POST" formaction="/events/<%=currEvent._id%>?_method=DELETE" class="event-delete-button">
-          <i class="fa-regular fa-trash-can"></i>
-        </button>
-      </form>
     </section>
+    <form method="POST" action="/events/<%=currEvent._id%>/rsvp">
+      <div class="event-listing-rsvp">
+        <p>Going?</p>
+        <button id="rsvp-yes" name="status" value="YES">YES</button>
+        <button id="rsvp-no" name="status" value="NO">NO</button>
+        <button id="rsvp-maybe" name="status" value="MAYBE">MAYBE</button>
+      </div>
+    </form>
     <dl>
       <dt>Host:</dt>
-      <dd><%= currEvent.host %></dd>
+      <dd><%= currEvent.host.companyName ? currEvent.host.companyName : currEvent.host.firstName + ' ' + currEvent.host.lastName %></dd>
       <dt>Start:</dt>
       <dd class="event-time"><%= currEvent.start %></dd>
       <dt>End:</dt>
@@ -26,6 +26,8 @@
       <dd><%= currEvent.location %></dd>
       <dt>Details:</dt>
       <dd><%= currEvent.details %></dd>
+      <dt>Number of RSVPs:</dt>
+      <dd><%=count%></dd>
     </dl>
   </article>
 </main>
