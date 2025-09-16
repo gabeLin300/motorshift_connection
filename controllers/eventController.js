@@ -1,13 +1,13 @@
 const {DateTime} = require('luxon');
-const model = require('../models/event');
+const {Event, RSVP, recurringEvent, daysOfWeek} = require('../models/event');
 const { v4: uuidv4 } = require('uuid');
 
 //GET all events
 exports.index = (req, res, next) => {
-    model.Event.find().lean()
+    Event.find().lean()
     .then(events => {
         if (events) {
-            eventMap = Map.groupBy(events, event => event.category);
+            const eventMap = Map.groupBy(events, event => event.category);
             res.render('event/index', {eventMap});
         } else {
             let err = new Error('Cannot find any events');
@@ -26,15 +26,24 @@ exports.new =  (req, res) => {
 //POST new event
 exports.create = (req,res, next) => {
     let event = req.body;
-    event.eventImg = '/uploads/' + req.file.filename;
-    newEvent = new model.Event(event);
+    event.host = req.session.user;
+    if(req.file)
+        event.eventImg = '/uploads/' + req.file.filename;
+
+    if(req.body.recurring) {
+        let newEvent = new recurringEvent(event)
+    } else {
+        let newEvent = new Event(event);
+    }
     newEvent.save()
     .then(()=> {
         res.redirect('/events');
     })
     .catch(err=>{
-        if(err.name === 'ValidationError')
-            err.status = 400;
+        if(err.name === 'ValidationError') {
+            req.flash('error',err.message);
+            return res.redirect(req.get('Referer'));
+        }
         next(err)
     });
 }
@@ -42,31 +51,26 @@ exports.create = (req,res, next) => {
 exports.show = (req, res, next) => {
     let id = req.params.id;
 
-    if(!id.match(/^[0-9a-fA-F]{24}$/)) {
-        let err = new Error('Invalid event id');
-        err.status = 400;
-        next(err);
-    }
-
     //function to check if views need to be incremented
-    const incrementViews = () => {
+    const incrementViewsPromise = () => {
         //simple cookies for tracking views on an event
         if(!req.cookies[`event${id}`]) {
-            const cookieTok = uuidv4();
+            const cookieToken = uuidv4();
             //cookie expires in 10 seconds for testing
-            res.cookie(`event${id}`, cookieTok, {maxAge: 10000, httpOnly: true});
-            return model.Event.findByIdAndUpdate(id, {$inc:{views:1}}).lean();
+            res.cookie(`event${id}`, cookieToken, {maxAge: 10000, httpOnly: true});
+            return Event.findByIdAndUpdate(id, {$inc:{views:1}}).populate('host', 'firstName lastName companyName').lean();
         }
-        return model.Event.findById(id).lean();
+        return Event.findById(id).populate('host', 'firstName lastName companyName').lean();
     }
 
-    incrementViews()
-    .then(currEvent => {
+    Promise.all([incrementViewsPromise(), RSVP.countDocuments({event: id, status: 'YES'})])
+    .then(results => {
+        const [currEvent, count] = results;
         if (currEvent) {
             //date formatting using luxon
             currEvent.start = DateTime.fromJSDate(currEvent.start).toLocaleString(DateTime.DATETIME_MED)
             currEvent.end = DateTime.fromJSDate(currEvent.end).toLocaleString(DateTime.DATETIME_MED)
-            res.render('event/show', {currEvent});
+            res.render('event/show', {currEvent, count});
         } else {
             let err = new Error('Cannot find the event with id: '+id);
             err.status = 404;
@@ -78,12 +82,8 @@ exports.show = (req, res, next) => {
 //GET edit form for specific event
 exports.edit = (req, res, next) => {
     let id = req.params.id;
-    if(!id.match(/^[0-9a-fA-F]{24}$/)) {
-        let err = new Error('Invalid event id');
-        err.status = 400;
-        next(err);
-    }
-    model.Event.findById(id).lean()
+
+    Event.findById(id).lean()
     .then(currEvent => {
         if (currEvent) {
             currEvent.start = DateTime.fromJSDate(currEvent.start).toISO({includeOffset: false})
@@ -99,38 +99,37 @@ exports.edit = (req, res, next) => {
 }
 //PUT update an event by id
 exports.update = (req, res, next) => {
-    id = req.params.id
-    newEvent = req.body;
-    if(req.file.filename)
+    let id = req.params.id
+    let newEvent = req.body;
+    if(req.file) 
         newEvent.eventImg = '/uploads/' + req.file.filename;
-    if(!id.match(/^[0-9a-fA-F]{24}$/)) {
-        let err = new Error('Invalid event id');
-        err.status = 400;
-        next(err);
-    }
-    model.Event.findByIdAndUpdate(id, newEvent).lean()
+
+    Event.findByIdAndUpdate(id, newEvent, {runValidators:true}).lean()
     .then(dbEvent=> {
         if(dbEvent) {
-            res.redirect('/events/'+id);
+            req.redirect('/events/'+id);
         } else {
             let err = new Error('Could not update the event with id: '+id);
             err.status = 404;
             next(err);
         }
     })
-    .catch(err=>next(err));
+    .catch(err=>{
+        if(err.name === 'ValidationError') {
+            req.flash('error',err.message);
+            return res.redirect(req.get('Referer'));
+        }
+        next(err)
+    });
 }
 //DELETE event by id
 exports.delete = (req, res, next) => {
-    id = req.params.id;
-    if(!id.match(/^[0-9a-fA-F]{24}$/)) {
-        let err = new Error('Invalid event id');
-        err.status = 400;
-        next(err);
-    }
-    model.Event.findByIdAndDelete(id).lean()
-    .then(dbEvent=> {
-        if (dbEvent) {
+    let id = req.params.id;
+
+    Promise.all([Event.findByIdAndDelete(id).lean(), RSVP.deleteMany({event: id})])
+    .then(results=> {
+        if (results) {
+            req.flash('success', 'Event deleted successfully')
             res.redirect('/events');
         } else {
             let err = new Error('Could not delete the event with id: '+id);
@@ -139,4 +138,23 @@ exports.delete = (req, res, next) => {
         }
     })
     .catch(err=>next(err));
+}
+//POST a new rsvp to a specific event
+exports.rsvp = (req,res,next) => {
+    let rsvp = req.body;
+    let eventId = req.params.id;
+    let userId = req.session.user;
+
+    RSVP.findOneAndUpdate({responder: userId, event: eventId}, rsvp, {upsert:true, runValidators:true, new:true})
+    .then(dbRSVP => {
+        req.flash('success', 'You have successfully RSVPd to this event')
+        res.redirect('/events/'+req.params.id);
+    })
+    .catch(err=>{
+        if(err.name === 'ValidationError') {
+            req.flash('error',err.message);
+            return res.redirect('/users/profile');
+        }
+        next(err)
+    });
 }
