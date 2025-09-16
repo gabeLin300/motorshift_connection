@@ -1,6 +1,6 @@
 <%- include('../partials/header.ejs')%>
 <main>
-      <form method="POST" action="/events" class="event-form" enctype="multipart/form-data">
+      <form method="POST" action="/events" class="main-form" enctype="multipart/form-data">
         <fieldset>
           <legend>Add an event</legend>
           <div>
@@ -20,18 +20,6 @@
               <option value="Asphalt Oval">Asphalt Oval</option>
               <option >Other</option>
             </select>
-          </div>
-          <div>
-            <label for="host">Host</label>
-            <input
-              name="host"
-              type="text"
-              id="host"
-              placeholder="Enter a host name"
-              required
-              minlength="10"
-              maxlength="100"
-            />
           </div>
           <div>
             <label for="name">Name</label>
@@ -55,11 +43,43 @@
               required
             />
           </div>
-          <div>
+          <div class="recurring-event">
+            <label for="recurring">Recurring?</label>
+            <input id="recurring" type="checkbox" name="recurring" value="true"/>
+          </div>
+          <div class="recurring-days-options">
+            <div>
+              <label for="sunday">Su</label>
+              <input id="sunday" type="checkbox" name="recurringDays[]" value="Sunday"/>
+            </div>
+            <div>
+              <label for="monday">Mo</label>
+              <input id="monday" type="checkbox" name="recurringDays[]" value="Monday"/>
+            </div>
+            <div>
+              <label for="tuesday">Tu</label>
+              <input id="tuesday" type="checkbox" name="recurringDays[]" value="Tuesday"/>
+            </div>
+            <div>
+              <label for="wednesday">We</label>
+              <input id="wednesday" type="checkbox" name="recurringDays[]" value="Wednesday"/>
+            </div>
+            <div>
+              <label for="thursday">Th</label>
+              <input id="thursday" type="checkbox" name="recurringDays[]" value="Thursday"/>
+            </div>
+            <div>
+              <label for="friday">Fr</label>
+              <input id="friday" type="checkbox" name="recurringDays[]" value="Friday"/>
+            </div>
+            <div>
+              <label for="saturday">Sa</label>
+              <input id="saturday" type="checkbox" name="recurringDays[]" value="Saturday"/>
+            </div>
+          </div>
+          <div class="event-date">
             <label for="start">Start</label>
             <input name="start" type="datetime-local" id="start" required/>
-          </div>
-          <div>
             <label for="end">End</label>
             <input name="end" type="datetime-local" id="end" required/>
           </div>
@@ -74,16 +94,15 @@
             ></textarea>
           </div>
           <div id="form-image-upload-container">
-            <label for="image">Image</label>
-            <input name="eventImg" type="file" id="image"/>
+            <label for="image-input">Image</label>
+            <input name="file-upload" type="file" id="image-input" required/>
           </div>
-          <div id="form-submit-button-container">
+          <div id="form-buttons">
             <input type="submit" />
-          </div>
-          <div id="form-cancel-button-container">
             <a id="cancel-button" href="/events">Cancel</a>
           </div>
         </fieldset>
       </form>
     </main>
+    <script type="module" src="/js/newEventForm.js"></script>
 <%- include('../partials/footer.ejs')%>

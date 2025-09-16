@@ -1,6 +1,6 @@
 <%- include('../partials/header.ejs')%>
 <main>
-      <form method="POST" action="/events/<%=currEvent._id%>?_method=PUT" class="event-form" enctype="multipart/form-data">
+      <form method="POST" action="/events/<%=currEvent._id%>?_method=PUT" class="main-form" enctype="multipart/form-data">
         <fieldset>
           <legend>Add an event</legend>
           <div>
@@ -16,19 +16,6 @@
               <option value="<%=category%>" <% if(category === currEvent.category) {%> selected <% } %>><%=category%></option>
               <% }); %>
             </select>
-          </div>
-          <div>
-            <label for="host">Host</label>
-            <input
-              name="host"
-              type="text"
-              id="host"
-              placeholder="Enter a host name"
-              required
-              minlength="10"
-              maxlength="100"
-              value="<%= currEvent.host %>"
-            />
           </div>
           <div>
             <label for="name">Name</label>
@@ -73,13 +60,11 @@
             ><%= currEvent.details %></textarea>
           </div>
           <div id="form-image-upload-container">
-            <label for="image">Image</label>
-            <input name="eventImg" type="file" id="image"/>
+            <label for="image-input">Image</label>
+            <input name="file-upload" type="file" id="image-input" required/>
           </div>
-          <div id="form-submit-button-container">
+          <div id="form-buttons">
             <input type="submit" />
-          </div>
-          <div id="form-cancel-button-container">
             <a id="cancel-button" href="/events">Cancel</a>
           </div>
         </fieldset>
